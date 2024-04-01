@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Available Tickets</title>
+</head>
+<body>
+  <h1>Select a Date</h1>
+  <input type="date" name="book_date" id="book_date">
 
+  <h3>Remaining Tickets</h3>
+  <ul id="available"></ul>
+
+  <script>
+     //1st code - disable previous dates
+    var today = new Date().toISOString().split('T')[0];
+
+    // Set the minimum selectable date to today
+    document.getElementById("book_date").setAttribute("min", today);
+
+  //2nd code - show tickets available per day
+    document.getElementById('book_date').addEventListener('change', function() {
+      var bookDate = this.value;
+      fetch('/get_tk?date=' + bookDate)
+        .then(response => response.json())
+        .then(data => {
+          var tList = document.getElementById('available');
+          tList.innerHTML = '';
+          data.forEach(function(ticket) {
+            var listticket = document.createElement('li');
+            listticket.textContent = 'quantity: ' + ticket.quantity;
+            tList.appendChild(listticket);
+          });
+        })
+        .catch(error => console.error('Tickets not found:', error));
+    });
+
+  </script>
+</body>
+</html>
